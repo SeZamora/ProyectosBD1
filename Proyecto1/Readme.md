@@ -13,7 +13,7 @@
 
 ## Modelo de la Base de datos
 
-![](./Modelos/Modelo Fisico.jpg)
+[![Modelo-Fisico.jpg](https://i.postimg.cc/gJ1dTd11/Modelo-Fisico.jpg)](https://postimg.cc/7G1pCvHN)
 
 ### Descripcion del modelo
 
