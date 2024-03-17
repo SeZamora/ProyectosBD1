@@ -180,35 +180,43 @@ def script_consulta1():
 def script_consulta2():
     return '''
 
-        SELECT JSON_OBJECT(
-        'ID Producto MAX', lineasOrdenes.id_producto, 
-        'Nombre MAX',productos.nombre, 
-        'Categoria MAX',categorias.nombre, 
-        'Cantidad MAX',SUM(lineasOrdenes.cantidad) , 
-        'Recaudado MAX',SUM(lineasOrdenes.cantidad*productos.precio) 
-        )
+    SELECT JSON_OBJECT(
+       
+            'MAX ID Producto', MAX_PROD.id_producto, 
+            'MAX Nombre', MAX_PROD.nombre, 
+            'MAX Categoria', MAX_PROD.categoria, 
+            'MAX Cantidad', MAX_PROD.cantidad, 
+            'MAX Recaudado', MAX_PROD.recaudado,
+            'MIN ID Producto', MIN_PROD.id_producto, 
+            'MIN Nombre', MIN_PROD.nombre, 
+            'MIN Categoria', MIN_PROD.categoria, 
+            'MIN Cantidad', MIN_PROD.cantidad, 
+            'MIN Recaudado', MIN_PROD.recaudado
+    ) AS Resultados
+    FROM
+        (SELECT lineasOrdenes.id_producto, 
+            productos.nombre, 
+            categorias.nombre AS categoria, 
+            SUM(lineasOrdenes.cantidad) AS cantidad, 
+            SUM(lineasOrdenes.cantidad*productos.precio) AS recaudado
         FROM proyecto1_bd1.lineasOrdenes
-        join proyecto1_bd1.productos ON lineasOrdenes.id_producto = productos.id_producto
-        join proyecto1_bd1.categorias ON categorias.id_categoria = productos.id_categoria
-        group by lineasOrdenes.id_producto
-        ORDER BY SUM(lineasOrdenes.cantidad) desc
-        LIMIT 1
-        ;
-
-        SELECT JSON_OBJECT(
-        'ID Producto MIN', lineasOrdenes.id_producto, 
-        'Nombre MIN',productos.nombre, 
-        'Categoria MIN',categorias.nombre, 
-        'Cantidad MIN',SUM(lineasOrdenes.cantidad) , 
-        'Recaudado MIN',SUM(lineasOrdenes.cantidad*productos.precio) 
-        )
+        JOIN proyecto1_bd1.productos ON lineasOrdenes.id_producto = productos.id_producto
+        JOIN proyecto1_bd1.categorias ON categorias.id_categoria = productos.id_categoria
+        GROUP BY lineasOrdenes.id_producto
+        ORDER BY SUM(lineasOrdenes.cantidad) DESC
+        LIMIT 1) AS MAX_PROD,
+        (SELECT lineasOrdenes.id_producto, 
+            productos.nombre, 
+            categorias.nombre AS categoria, 
+            SUM(lineasOrdenes.cantidad) AS cantidad, 
+            SUM(lineasOrdenes.cantidad*productos.precio) AS recaudado
         FROM proyecto1_bd1.lineasOrdenes
-        join proyecto1_bd1.productos ON lineasOrdenes.id_producto = productos.id_producto
-        join proyecto1_bd1.categorias ON categorias.id_categoria = productos.id_categoria
-        group by lineasOrdenes.id_producto
+        JOIN proyecto1_bd1.productos ON lineasOrdenes.id_producto = productos.id_producto
+        JOIN proyecto1_bd1.categorias ON categorias.id_categoria = productos.id_categoria
+        GROUP BY lineasOrdenes.id_producto
         ORDER BY SUM(lineasOrdenes.cantidad)
-        LIMIT 1
-        ;
+        LIMIT 1) AS MIN_PROD;
+
     '''
 
 def script_consulta3():
@@ -274,7 +282,7 @@ def script_consulta5():
             JOIN proyecto1_bd1.paises ON paises.id_pais = clientes.id_pais
             JOIN proyecto1_bd1.productos ON productos.id_producto = LineasOrdenes.id_producto
             GROUP BY paises.id_pais
-            ORDER BY SUM(LineasOrdenes.cantidad * productos.precio) DESC
+            ORDER BY SUM(LineasOrdenes.cantidad * productos.precio) ASC
             LIMIT 5
         ) AS mayores
 

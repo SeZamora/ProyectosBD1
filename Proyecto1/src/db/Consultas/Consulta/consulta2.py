@@ -8,28 +8,17 @@ def Consulta2():
     try:
         conexion.begin()
         cursor = conexion.cursor()
-        scripts = script_consulta2()
-        resultado_max = None
-        resultado_min = None
-        for script in scripts.split(";"):
-            if script.strip() != "":
-                cursor.execute(script)
-                if resultado_max == None:
-                    resultado_max = cursor.fetchall()
-                else:
-                    resultado_min = cursor.fetchall()
- 
+        consulta = script_consulta2()
 
-        # Convierte las cadenas JSON en objetos Python (diccionarios)
-        max_json = json.loads(resultado_max[0][0])
-        min_json = json.loads(resultado_min[0][0])
-
-
-        # Combina los objetos JSON en uno solo
-        resultado_final = {**max_json, **min_json}
+        cursor.execute(consulta)
+        resultados = cursor.fetchall()
+        
+        # Convertir la cadena de resultados a un objeto JSON
+        resultados_json = json.loads(resultados[0][0])
+        
 
         conexion.commit()
-        return resultado_final
+        return resultados_json
     except Exception as e:
         conexion.rollback()
         return f"Error inesperado: {e}"
