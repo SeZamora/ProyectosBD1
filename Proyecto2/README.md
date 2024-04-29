@@ -21,6 +21,7 @@
 ### Modelos de la base de datos
 
 - Modelo Conceptual
+
 ![](./ModeloConceptual.jpg)
 
 - Modelo Logico
