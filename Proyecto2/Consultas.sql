@@ -4,6 +4,7 @@ CREATE PROCEDURE consultarSaldoCliente(
 )
 BEGIN
 	DECLARE existe INT;
+    
      SELECT id_cliente INTO existe FROM cuentas WHERE id_cuenta = cuenta;
      
      IF existe IS NULL THEN 

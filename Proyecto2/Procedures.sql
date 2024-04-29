@@ -3,8 +3,19 @@ DELIMITER //
 
 CREATE PROCEDURE registrarTipoCliente(IN par_idTipo INT, IN par_nombre VARCHAR(40), IN par_descripcion VARCHAR(300))
 BEGIN
+	DECLARE existe INT;
+    
     IF par_descripcion NOT REGEXP '^[a-zA-Z[:space:]áéíóúÁÉÍÓÚüÜ]+$' THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: El parámetro debe contener solo letras y espacios.';
+    END IF;
+    	
+    SELECT id_tipocliente into existe FROM tipo_clientes WHERE par_nombre=nombre;
+    IF existe IS NOT NULL THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un tipo de cliente con ese nombre';
+    END IF;
+    
+    IF par_nombre = '' THEN
+    	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nobre no puede ser null';
     END IF;
     INSERT INTO tipo_clientes(nombre, descripcion) VALUES (par_nombre, par_descripcion);
     
@@ -17,6 +28,15 @@ DELIMITER //
 
 CREATE PROCEDURE registrarTipoCuenta(IN par_idTipo INT, IN par_nombre VARCHAR(40), IN par_descripcion VARCHAR(300))
 BEGIN
+	DECLARE existe INT ;
+   SELECT id_tipocuenta into existe FROM tipo_cuentas WHERE par_nombre=nombre;
+    IF existe IS NOT NULL THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Ya existe un tipo de cuenta con ese nombre';
+    END IF;
+    
+    IF par_nombre = '' THEN
+    	SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Nobre no puede ser null';
+    END IF;
 
     INSERT INTO tipo_cuentas(nombre, descripcion) VALUES (par_nombre, par_descripcion);
     
@@ -42,6 +62,7 @@ BEGIN
     DECLARE pos INT DEFAULT 1;
     DECLARE next_pos INT;
     
+    
     DECLARE correo_actual VARCHAR(255);
     DECLARE pos_correo INT DEFAULT 1;
     DECLARE siguiente_pos_correo INT;
@@ -55,6 +76,8 @@ BEGIN
     
     -- Iniciar la transacción
     START TRANSACTION;
+    
+    
     
     -- Validar nombre y apellido
     IF p_nombre NOT REGEXP '^[a-zA-Z[:space:]áéíóúÁÉÍÓÚüÜ]+$' THEN
@@ -188,7 +211,9 @@ BEGIN
 	DECLARE fecha_datetime DATETIME; 
     DECLARE existe_tipo INT;
     DECLARE existe_cliente INT;
-    
+	IF p_saldo <>  p_montoApertura THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Monto apertura no es el mismo que el saldo';
+    END IF;
     IF p_montoApertura <= 0  THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Error: Monto Apertura no es mayor a 0';
     END IF;
@@ -322,7 +347,7 @@ IN p_idcliente INT
 )
 BEGIN
 	DECLARE p_fecha DATE; 
-	DECLARE existe_cliente DATE;
+	DECLARE existe_cliente INT;
 	SET p_fecha = STR_TO_DATE(p_fechav, '%d/%m/%Y'); 
     
 	SELECT id_cliente INTO existe_cliente FROM clientes WHERE id_cliente = p_idcliente;
@@ -348,6 +373,9 @@ IN p_nombre VARCHAR(20),
 IN p_detalle VARCHAR(40)
 )
 BEGIN
+	IF p_nombre = '' THEN
+		SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El nombre no puede ser null';
+    END IF;
 	INSERT INTO tipo_transacciones(id_tipotransaccion, nombre, descripcion) VALUES (p_idcodigo, p_nombre, p_detalle);
 END//
 
