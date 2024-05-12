@@ -1,6 +1,6 @@
 #### Universidad de San Carlos de Guatemala
 #### Facultad de Ingeniería
-#### Redes de Computadoras 1
+#### Laboratorio de Base de Datos 1
 #### Primer Semestre de 2024
 
 |Nombre  | Carnet | 
